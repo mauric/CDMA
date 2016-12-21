@@ -1,0 +1,43 @@
+TP communication sans fil
+
+\section{Introduction}
+
+\section{ Etude de l'étalement de spectre.}
+
+Questions : 
+Q1-  Observer  en  temporel  le  signal  en  sortie  du  générateur 
+ aléatoire  et  en  sortie  du générateur de séquence pseudo aléatoire. Commentez. 
+
+ 
+ 
+
+Q2- Comparer les deux spectres avant et après la fonction multiplication 
+pour une valeur quelconque de n. Commentez. 
+
+après de la multiplication pour une valeur quelconque de n on a un etalement du 
+spectre qui met la puissance plus distribue sur tout l'espectre de fréquences
+et donc on va trouver un limite parce on se trouvera plus proche du bruit.
+
+
+Q3- Etudier l'influence de la longueur du code sur l'étalement de spectre.
+ Se placer dans le cas n = 3 puis n = 7, qu'observe-t-on ? 
+
+ 
+ 
+\section{ Construction d'un récepteur. }
+ 
+L'opération de de-étalement effectuée au niveau du récepteur permet de retrouver notre signal 
+d'origine. Le schéma de principe du récepteur est donné ci-dessous :  
+
+\section{Hadamard}
+
+Code de Hadamard :  
+Faire l'auto et l'intercorrelation de 2 codes de Hadamard "fils" de longueur 128 mais d'indices 
+différents. 
+ Prendre  un  générateur  de  Hadamard  "  Hadamard  Code  Generator"  [  code  length  :  128  ; 
+code index : ∀; Tech=10 -6  /128 ; frame based output ; éch par trame = 128 ]. 
+
+
+Le max sera toujours à 2 parce que mirar hoja de Pascal, sera donne para un 
+L de 4 cuando todas las salidas son a 1. Esperance de la function correlation au carré
+
