@@ -11,19 +11,21 @@
 % (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
 %
 % License:
-% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%  CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%----------------------------------------------------------------------------------------
-%	PACKAGES AND DOCUMENT CONFIGURATIONS
-%----------------------------------------------------------------------------------------
+%---------------------------------------------------------------------
+% 	PACKAGES AND DOCUMENT CONFIGURATIONS
+%-------------------------------------------------------------------
 
 \documentclass{report}
 \usepackage[utf8]{inputenc}
+\usepackage[left=2.50cm, right=1.00cm, top=1.00cm, bottom=2.00cm]{geometry}
 \usepackage{siunitx} % Provides the \SI{}{} and \si{} command for typesetting SI units
 \usepackage{graphicx} % Required for the inclusion of images
 \usepackage{caption}
+\usepackage{subcaption}
 \usepackage{natbib} % Required to change bibliography style to APA
 \usepackage{amsmath} % Required for some math elements 
 \usepackage{amssymb}
@@ -47,27 +49,27 @@
 \renewcommand{\labelenumi}{\alph{enumi}.} % Make numbering in the enumerate environment by letter rather than number (e.g. section 6)
 
 %\usepackage{times} % Uncomment to use the Times New Roman font
-%----------------------------------------------------------------------------------------
-%	TITLE PAGE
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------
+% 	TITLE PAGE
+%-------------------------------------------------------------------
 % Title Page
 \title{TIC}
 \author{Mauricio Caceres}
 \date{18 décembre 2016}
 
-%----------------------------------------------------------------------------------------
-%	DOCUMENT INFORMATION
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------
+% 	DOCUMENT INFORMATION
+%-------------------------------------------------------------------
 
 \begin{document}
 \begin{titlepage}
 	\centering
 	\vfill
-{\bfseries\huge Technologie de l'information et codage}
+{\bfseries\huge Communication sans fil}
 	\vfill
 	{\bfseries\LARGE
 		TP:\\
-		Codage de source et optimisation de la \\capacité du canal
+		Code division multiple acces \\capacité du canal
 		\\
 		\vskip2cm
 
@@ -77,7 +79,7 @@
 	\vfill
 	18 décembre 2016
 	\vfill
-	{\large Mauricio Caceres } \hfill  {\large Enseignant : Claude Cariou}
+	{\large Mauricio Caceres } \hfill  {\large Enseignant : Pascal Scalart}
 	\vfill
 	\includegraphics[width=9cm]{rennes} % also works with logo.pdf    
 	\vfill
@@ -102,395 +104,447 @@
 % Abstract text
 % \end{abstract}
 
-%----------------------------------------------------------------------------------------
-%	SECTION 1
-%----------------------------------------------------------------------------------------
-\chapter{Introduction}
-\section{Objectif}
+%-------------------------------------------------------------------
+% 	SECTION 1
+%-------------------------------------------------------------------
+\chapter{Introduction}%7
+%RE REDIGER CETTE SECTION POUR LA FAIRE PAS COMME ICI
+Du fait du codage spécifique autorisant une bande passante élargie, les techniques d’étalement
+de spectre possèdent des propriétés spécifiques différentes de celles des signaux faible bande.
+Ces techniques ouvrent notamment la possibilité d’accées multiples . Si plusieurs utilisateurs
+transmettent au même moment des signaux modulés par étalement de spectre, le récepteur
+peut distinguer ces différents utilisateurs à condition que chacun d’entre eux possède un code
+d’étalement unique ayant des propriétés de faible intercorrélation avec les autres mots de
+codes utilisés.
+Si l’on effectue, au niveau du récepteur, la corrélation entre le signal reçu et un code
+d’étalement utilisé par un utilisateur, le signal provenant de cet utilisateur sera des-étalé tandis
+que les signaux provenant des autres utilisateurs resteront étalés sur une large bande
+passante.
 
-L’objectif de ce TP est de vérifier expérimentalement la théorie de Shannon en utilisant les
-outils de la théorie de l’information (entropie, information mutuelle).\\ Plus précisément, il
-s’agira d’optimiser le couple source-canal : considérant un canal binaire non symétrique.\\ Il
-faudra déterminer (théoriquement et expérimentalement) les conditions optimales d’utilisation
-de ce canal, c’est-à-dire trouver la distribution de probabilité des symboles d’entrée maximisant
-l’information mutuelle entre l’entrée et la sortie.
-
-
-\subsection{Definitions}
-\label{definitions}
+\section{Définitions et concepts utilises}%8
+%CHANGER LES DESCRIPSION DE LES DEFINITIONS
 \begin{description}
-\item[Canal]
-Un canal discret sans mémoire est un modèle
-statistique comportant une entrée X (variable aléatoire) et une sortie Y
-(variable aléatoire), qui est une version bruitée de X.
+	\item  [Label 1] Le texte de cette etiquette est le suivante
+\end{description}
 
-La source émet un symbole issu de l'alphabet par exemple A
-\begin{equation}\label{key}
-A=\{x_0,x_1,...,x_{j-1}\}
-\end{equation}
-La sortie du canal discret sans mémoire est un symbole issu de l'alphabet
-que nous appellerons B
-\begin{equation}\label{key}
-B=\{y_0,y_1,...,y_{i-1}\}
-\end{equation}
-Chaque un des éléments de l'ensemble
-\item[Canal binaire non symétrique]
-Le canal est caractérisé par ses probabilités de transition. Dans un canal no symétrique 
-les probabilités de transition ne sont pas égales.
-
-
+%------------------------------------------------------------------
+% 	SECTION 2
+%-----------------------------------------------------------------
+\chapter{Implementation en Matlab/Simulink}%1
+\section{Etude de l'étalement de spectre}%2
+Dans cette section on va étudier l'effet de la codification et son impact dans la forme du spectre.
+La codification est faite en multipliant élément par élément le code par la signal. Dans la Fig.\ref{fig:schemaq1} le schéma de contruction dans le 
+logiciel Simulink.
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}
-	\matrix (m) [matrix of math nodes,row sep=5em,column sep=10em,minimum width=5em]
-	{
-		\alpha = P(X = 0)  & P(Y = 0)\\
-		1-\alpha = P(X = 1)  & P(Y = 1) \\};
-	\path[-stealth]
-	(m-1-1) edge node [below] {$1-p1$} (m-1-2)
-	(m-2-1) edge node [below] {$p2$} (m-1-2)
-	(m-1-1) edge node [above] {$p1$} (m-2-2)
-	(m-2-1) edge node [above] {$1-p2$} (m-2-2);
-	
-	\end{tikzpicture}
-	\label{img:schema_transition}
-	\caption{schèma du transition du canal}
+	\includegraphics[width=0.7\linewidth]{schema_q1_solo_63}
+	\caption{shema q1}
+	\label{fig:schemaq1_solo}
 \end{figure}
 
-\item[Information mutuelle]
-L'information gagnée sur l'observation d'un évènement est à cause de que existe 
-une certaine quantité de surprise un niveau d'incertitude. On utilise cette concept
-et la notion d'entropie pour comprendre comment est définie l'information mutuelle.\\
-\begin{figure}[h]
-	\centering
-	\captionsetup{justification=centering}
-	\includegraphics[width=0.5\linewidth]{info}
-	\caption{Entropies individuelles (H(X),H(Y)),\\ jointes (H(X,Y)), d'une couple (X, Y),\\ avec l'information mutuelle I(X; Y).}
-	\label{fig:info}
-\end{figure}%todo reviser
-$H(X)$ est l’incertitude sur l’entrée avant l’observation de la
-sortie. $H(X | Y)$ est l’incertitude sur l’entrée après l’observation de
-la sortie. Si même $H(X) – H(X | Y)$ représente l’incertitude sur l’entrée
-résolue par l’observation de la sortie, ce qui est défini comme information mutuelle.
+D'abord on genere la signal à étudier avec une suite aleatoire de entier entre 0 et 1 pour après 
+convertir cette signal en bipolaire, c'est à dire valeur entre -1 et 1. Cela est
+fait pour que la multiplication élément par élément avec le code soit cohérente.\\%AGREGAR ALGUN QUE OTRO DETALLE AQUI
 
-
-\item[Capacité du canal]%todo reviser 
-la capacité d’un canal discret sans mémoire
-est le maximum de l’information mutuelle I(A, B) moyenne
-obtenu pour l’ensemble des symboles émis, la
-maximisation étant opérée sur toutes les distributions a
-priori possibles $\{p ( x j ) \}$ sur A.
-\begin{equation}\label{capaciteCanal}
-C = maxI(A,B)
-\end{equation}
-Sous les cointraintes 
-\begin{equation}\label{key}
- p ( x_j ) \geq 0 ; \forall j \qquad \sum_{j=0}^{J-1}p ( x_j )=1
-\end{equation}
-\end{description} 
+Ensuite la génération du code a lieu dans la voie inférieur de la Fig.\ref{fig:schemaq1_solo}
+un générateur de code pseudo aléatoire %SE PUEDE EXPLICAR COMO FUNCIONA EL GENERADOR ALEATORIO ACA ABAJO ESTA LA INFO
+%Generate a pseudorandom noise (PN) sequence using a linear feedback shift register (LFSR). The LFSR is implemented using a simple shift register generator (SSRG, or Fibonacci) configuration.
+%
+%The 'Generator polynomial' parameter values specify the shift register connections. Enter these values as either a binary vector or a descending-ordered polynomial. For the binary vector representation, the first and last elements of the vector must be 1. For the descending-ordered polynomial representation, the last element of the vector must be 0.
+%
+%The 'Output mask source' may be from a dialog parameter or an input port. The 'Output mask vector' is a binary vector corresponding to the shift register states that are to be XORed to produce the output sequence values. Alternatively, you may enter an integer 'scalar shift value' to produce an equivalent advance or delay in the output sequence.
+%
+%For variable-size output signals, the current output size is either specified from the 'oSiz' input or inherited from the 'Ref' input.
+%
 
 
 
-%----------------------------------------------------------------------------------------
-%	SECTION 2
-%----------------------------------------------------------------------------------------
-\chapter{Implémentation en MATLAB{\small \circledR}}
+\subsection{Observation dans le domaine temporel}
 
-\section{Génération d'une séquence binaire}
-Pour effectuer la simulation du canal nous avons besoin d'avoir une séquence aléatoire de un alphabet binaire.
-Dans la Fig. \ref{img:schema_transition} on voit bien que la probabilité de que $P(X=0)$ est défini comme un 
-$\alpha$ qui sera notre paramètre. On pourra générer un séquence de tout zéros pour un $\alpha = 1$ et uns séquence de toutes un pour $\alpha = 0$
-Dans le code \ref{code_sequence} nous avons utilisé la fonction \texttt{randsrc} ou on désigne 
-l'alphabet à utiliser et la probabilité de chaque éléments.
-
-\begin{lstlisting}[caption={Code générateur de séquence bynaire aléatoire},label=code_sequence]
-help randsrc
-%[...] 
-% If ALPHABET is a two-row matrix, the first row defines the
-% Matrix  possible outputs (as above).  The second row of ALPHABET
-% specifies the probability for each corresponding element.  The
-% elements of the second row must sum to one.
-%[...] 
-alphabet = [0 1 ; alpha 1-alpha];
-S=randsrc(1,N,alphabet);
-\end{lstlisting}
-
-\section{Simulation du canal asymétrique}
-En suivant le schèma de la Fig.\ref{img:schema_transition_2} on a pu coder la simulation comme est 
-montre dans le code \ref{code_simulation}.\\
-Sachant que le canal est caractérise pour les probabilités de transition $P(Y = 1|X = 0)=p1$ $ P(Y = 0|X = 1)=p2 $ l'idée de l'implementation est évaluer a chaque fois le contenu de $X$ la séquence aléatoire d'entrée et selon si sa 
-valeur est 1 ou 0 on va générer un séquence aléatoire (d'un élément) avec un probabilité pour 0 et 1 donnée pour soit $p1$ ou bien $p2$. Il peut avoir de problèmes si on désigne de manière
-incorrecte les probabilités.
+La signal est observé dans le domaine temporel après d'être multiplie par le code pour bien vérifier au moment 
+de la réception que les données on était bien reçu. Malheureusement la simulation ne permet pas de voir les premières
+instant pour faire une validation en regardant les premières données obtenues.
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}
-	\matrix (m) [matrix of math nodes,row sep=5em,column sep=10em,minimum width=5em]
-	{
-		\alpha = P(X = 0)  & P(Y = 0)\\
-		1-\alpha = P(X = 1)  & P(Y = 1) \\};
-	\path[-stealth]
-	(m-1-1) edge node [below] {$1-p1$} (m-1-2)
-	(m-2-1) edge node [below] {$p2$} (m-1-2)
-	(m-1-1) edge node [above] {$p1$} (m-2-2)
-	(m-2-1) edge node [above] {$1-p2$} (m-2-2);
-	
-	\end{tikzpicture}
-	\caption{canal BNS}
-	\label{img:schema_transition_2}
+	\includegraphics[width=0.5\linewidth]{error_rojo}
+	\caption{En regardant les graph temporel on peut vérifier si le codage est fait correctement}
+	\label{fig:errorrojo}
 \end{figure}
 
-\begin{lstlisting}[caption={Code pour les probabilite de transition $P(Y = 1|X = 0)=p1$ $ P(Y = 0|X = 1)=p2 $},label=code_simulation]
-%% version en utilisant meme function seqbinaire
-     for i = 1:length(X)
-         if(X(i) == 0) %en sachant X=0
-                Y(i) =  seqbinaire(1,1-p1); % proba de element 0 de l'alphabet donc 1-p1
-         else             %en sachant X=1
-                Y(i) =  seqbinaire(1,p2);
-         end  
-     end
+Pourtant nous ferons après le calcul de l'erreur et nous pourrons constater que la signal arrive correctement au récepteur.\\
+L'observation de la signal dans le domaine temporel par le bias du "vector scope" est montré dans la Fig \ref{fig:temporelq1decodificada} et la Fig \ref{fig:temporelq1codificada} ce sont bien des valeur entre 
+
+
+
+ En sortie du codificador la simulation nous montre cette suite de point généres de manières aléatoires.
  
-\end{lstlisting}
-
-La version implementé dans le code \ref{code_simulation} a pris beacoup de temps de simulation. Pour 
-soigner cette problème l'utilisation du code \ref{code_simulation_2} qui fait pas à pas l'affectation
-des valeurs selon les probabilités données. Le temps de simulation a été réduit considérablement
-
-%todo acomodar el codigo
-\begin{lstlisting}[caption={Code },label=code_simulation_2]
-    for i = 1:length(X)
-if(X(i) == 0) %en sachant X=0
-if rand()< p1 
-Y(i) = 1;  % p(Y=1|X=0)=p1
-else              
-Y(i) = 0; %sinon Y = 0 avec proba = 1-p1
-end
-else             %en sachant X=1
-if rand()< p2
-Y(i) = 0; % p(Y=0|X=1)=p2
-else
-Y(i) = 1; %sinon Y = 0 avec proba = 1-p2
-end      
-end
-end
-\end{lstlisting}
-
-\section{Estimation de l'information mutuelle}
-On connait la définition de l'information mutuelle
-\begin{equation}\label{eq:I}
-I(X,Y) = H(Y) - H(Y|X);
-\end{equation}
-La stratégie est calculer les entropies séparément. D'abord l'entropie de la sortie $Y$
-\begin{equation}\label{eq:II}
-H(Y) = -P(Y=0)log(P(Y=0))-P(Y=1)log(P(Y=1))
-\end{equation}
-Et ensuite l'entropie conditionnelle
-\begin{eqnarray}\label{key}
-H(Y|X)= (-P(Y=0|X=0)log2(P(Y=0|X=0))-\nonumber\\P(Y=1|X=0)log2(P(Y=1|X=0)))P(X=0)\nonumber\\ +(-P(Y=0|X=1)log2(P(Y=0|X=1))-\nonumber\\P(Y=1|X=1)*log2(P(Y=1|X=1)))(P=X1);\nonumber\\
-\label{eq:III}
-\end{eqnarray}
-On voit bien que il faut avoir la valeur de tous les probabilités pour effecteur le calcul. Donc on va les estimer dans la section suivante (\ref{sec:estimation}).
-
-\subsection{Estimation de probabilités sur l'entrée et la sortie}
-\label{sec:estimation}
-En utilisant la équation suivante on peut estimer la valeur des probabilités. Ces valeurs de 
-probabilité seront utilisés pour le calcul de l'information mutuelle expérimentale
-\begin{equation}\label{eq:probconde}
-P(Y=0) \approx 1/N \sum_{n=1}^{N}  \mathbf{1}_{y_n=0}
-\end{equation}
-
-Pour notre cas on fait la somme des occurrences de numéro 1 et ensuite on calcule la probabilité 
-complémentaire.
-\begin{equation}\label{eq:probcond}
-P(Y=1) \approx 1/N \sum_{n=1}^{N}  \mathbf{1}_{y_n=1}\qquad P(Y=0) = 1 - P(Y=1)
-\end{equation}
-
-\begin{equation}\label{eq:probcondee}
-P(X=1) \approx 1/N \sum_{n=1}^{N}  \mathbf{1}_{x_n=1}\qquad P(X=0) = 1 - P(X=1)
-\end{equation}
-
-En utilisant la fonction \texttt{find} de Matlab on peut trouver les éléments non nuls 
-dedans un vecteur. Dans le code \ref{code_conditional} on voit l'implémentation d'une fonction
-qui fait tout le travail.
-\vfill
-\begin{lstlisting}[caption={Code },label=code_conditional]
-function [IXY]=info_mutuelle(X,Y) 
-%  Fonction pour  Estimation   I(X,Y) = H(Y) - H(Y|X);
-%% Variables
-N = length(X);
-NY = length(Y);
-
-%% Estimation de P(X = 0) et P(X = 1)
-NXones = length(find(X));
-NXzeros = N - NXones ;
-PX1 = NXones/N; %find cherche les elements non nuls
-PX0 = 1 - PX1;
-
-%% Estimation de P(Y = 0) et P(Y = 1)
-NYones =  length(find(Y));
-NYzeros =  N - NYones;
-PY1 = NYones/NY;
-PY0 = 1 - PY1;
-...
-...
-\end{lstlisting}
-
-\subsection{Estimation de probabilités conditionnelles}
-Avec la même notion de probabilités estime on calcule les probabilites conditionneles.
-\begin{equation}\label{key}
-P(Y=1|X=0) \approx 1/N_{x_n=0} \sum_{n=1}^{N}  \mathbf{1}_{y_n=1,x_n=0} 
-\end{equation}
-
-\begin{equation}\label{key}
-P(Y=1|X=1) \approx 1/N_{x_n=1} \sum_{n=1}^{N}  \mathbf{1}_{y_n=1,x_n=1} 
-\end{equation}
-
-\begin{lstlisting}[caption={Code },label=code_]
-
-for i = 1:N
-%% Estimation de P(Y = 0|X = 0) et P(Y = 0|X = 1) 
-if Y(i)==0 && X(i)== 0
-		PY0X0 =  PY0X0 +1;  %% count P(Y = 0|X = 0)
-	elseif Y(i)==0 && X(i)==1
-		PY0X1 = PY0X1+1;    % count P(Y = 0|X = 1                  
-	%% Estimation de P(Y = 1X = 0) et P(Y = 1|X = 1) 
-	elseif Y(i)==1 && X(i) == 0  
-		PY1X0 =  PY1X0 +1;   %count for P(Y = 1X = 0)
-	elseif Y(i)==1 && X(i) == 1
-		PY1X1 =PY1X1 + 1;   %count for P(Y = 1|X = 1) 
-	end
-end
-%utiliser bayes
-PY1X1 = PY1X1/NXones;
-PY1X0 = PY1X0/NXzeros;
-PY0X1 = PY0X1/NXones; 
-PY0X0 = PY0X0/NXzeros;
-...
-...
-\end{lstlisting}
-
-En ayant maintenant tous les valeurs on pourra effecteur le calcul avec les équations 
-,\ref{eq:II},\ref{eq:III}. On peut passer a l'étape suivante.
-%\begin{equation}\label{key}
-%H(Y) = -P(Y=0)log(P(Y=0))-P(Y=1)log(P(Y=1))
-%\end{equation}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{temporel_q1_codificada}
+%	\caption{signal codificada}
+%	\label{fig:temporelq1codificada}
+%\end{figure}
 %
-%\begin{eqnarray}\label{key}
-%H(Y|X)= (-P(Y=0|X=0)log2(P(Y=0|X=0))-\nonumber\\P(Y=1|X=0)log2(P(Y=1|X=0)))P(X=0)\nonumber\\ +(-P(Y=0|X=1)log2(P(Y=0|X=1))-\nonumber\\P(Y=1|X=1)*log2(P(Y=1|X=1)))(P=X1);\nonumber\\
-%\end{eqnarray}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{temporel_q1_decodificada}
+%	\caption{signal codificada}
+%	\label{fig:temporelq1decodificada}
+%\end{figure}
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{temporel_q1_codificada}
+			\caption{signal en sortie du codeur}
+		\label{fig:temporelq1codificada}
+	\end{subfigure}
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{temporel_q1_decodificada}
+			\caption{signal en sortie du décodeur}
+		\label{fig:temporelq1decodificada}
+	\end{subfigure}
+\end{figure}
+
+
+
+\subsection{Observation dans le domaine fréquenciel}
+
+L'spectre du signal générée avant et après la fonction multiplication pour un valeur de n = 7 et du vecteur de 
+polynome générateur $ [1 1 0 0 0 0 1] $ (après nous analyserons l'effet de changer cette paramètre).\\
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{cdma_2_jpg}
+	\caption{something}
+	\label{fig:cdma2jpg}
+\end{figure}
+
+%\begin{figure}
+%	\centering
+%	\begin{subfigure}[b]{0.4\textwidth}
+%	\includegraphics[width=0.9\linewidth]{cdma_2_jpg}
+%\caption{something}
+%\label{fig:cdma2jpg}
+%	\end{subfigure}
+%	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%	%(or a blank line to force the subfigure onto a new line)
+%	\begin{subfigure}[b]{0.4\textwidth}
+%	\includegraphics[width=0.9\linewidth]{cdma_1_jpg}
+%\caption{something}
+%\label{fig:cdma1jpg}
+%	\end{subfigure}
+%\end{figure}
+
+
+Dans la Fig \ref{fig:cdma1jpg} l'espectre n'est pas étale la puissance est concentrée dans une bande 20Mhz (-10Mhz à 10Mhz) en ayant une valeur de -60 dBW/Hz
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{cdma_1_jpg}
+	\caption{something}
+	\label{fig:cdma1jpg}
+\end{figure}
+
+Dans le cas du spectre de signal modifiée par le code la valeur maximale de la puissance diminue approximativement jusqu'à -74 dB/Hz  mais elle est repartie de manière plus uniforme sur tous les fréquences.
+
+\subsection{Génération du polynome avec n=7 y n=3}
+
+\subsubsection{n = 7}
+
+On a changé le polynôme générateur pour voir les effets sur le spectre. Les résultats obtenues sont dans les Fig. \ref{fig:segundoespectroparan77} et la Fig. \ref{fig:segundospectroparan7} mais on peut conclure que pour le choix fait
+il n'y a pas trop de différence par rapport au graph obtenues dans la Fig. \ref{fig:cdma2jpg} et la Fig. \ref{fig:cdma1jpg}.
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{schemanx77}
+%	\caption{schema para nx7}
+%	\label{fig:schemanx77}
+%\end{figure}
+
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.9\linewidth]{segundo_espectro_paran77}
+\caption{spectre para n = 7 avec une autre polynome generateur}
+\label{fig:segundoespectroparan77}
+	\end{subfigure}
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.9\linewidth]{segundo_spectro_paran7}
+\caption{segundo spectreo para n = 7}
+\label{fig:segundospectroparan7}
+	\end{subfigure}
+\end{figure}
+
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{segundo_espectro_paran77}
+%	\caption{spectre para n = 7}
+%	\label{fig:segundoespectroparan77}
+%\end{figure}
 %
-%\begin{equation}\label{key}
-%I(X,Y) = H(Y) - H(Y|X);
-%\end{equation}
+%
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{segundo_spectro_paran7}
+%	\caption{segundo spectreo para n = 7}
+%	\label{fig:segundospectroparan7}
+%\end{figure}
 
 
-
-%----------------------------------------------------------------------------------------
-%	SECTION 3
-%----------------------------------------------------------------------------------------
-\chapter{Analyses et conclusions}
-\section{Courbes et données obtenues}
-La trace de la fonction $I(X,Y)=f(\alpha)$ est donnée dans la Fig. \ref{fig:superposition}
-Avec les paramètres données pour $p1 = 0.1$ et $p2 = 0.2$ et une discrétisation avec 200 points sur l'échelle d'alpha.\\
-Dans cette figure on verra aussi que les deux courbes se superposes assez bien.
+\subsubsection{n = 3}
+Pour avoir une taille de polynôme générateur n = 3 il faut changer aussi le paramétré du blocs de répétition pour
+faire un échantillonnage correctement. On voit cela dans la figure \ref{fig:schemaq1_solo_7}
 \begin{figure}[h]
 	\centering
-	\captionsetup{justification=centering}
-	\includegraphics[width=0.7\linewidth]{../canal1}
-	%todo caption
-	\caption{}
-	\label{fig:superposition}
+	\includegraphics[width=0.6\linewidth]{schema_q1_solo}
+	\caption{shema q1}
+	\label{fig:schemaq1_solo_7}
 \end{figure}
-Le début et fin de la coube en 0 et un bonne signal de que elle est correcte. \\
-Dans la figure \ref{fig:errorsuposition} la courbe montre l'erreur avec un facteur d'échelle de 30 (pour le voir mieux, parce que l'erreur est petit) entre chaque courbe la théorique et l'expérimentale
+La observation dans le domaine de la fréquence obtenue avant de la modification du code (Fig. \ref{fig:spectren33}) 
+montre moins de concentration de la puissance en ayant la même repartie dans autres fréquences mais tout en restant
+plus concentrée dans ces fréquences. C'est ne pas le cas de la Fig. \ref{fig:spectren3} qui montre le étalement de spectre dans toutes les fréquences après la multiplication par le code.
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.6\linewidth]{spectren33}
+%	\caption{spectre pour n = 3}
+%	\label{fig:spectren33}
+%\end{figure}
+%
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.6\linewidth]{spectren3}
+%	\caption{spectre pour n = 3}
+%	\label{fig:spectren3}
+%\end{figure}
+
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.78\linewidth]{spectren33}
+\caption{spectre pour n = 3}
+\label{fig:spectren33}
+	\end{subfigure}
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.78\linewidth]{spectren3}
+\caption{spectre pour n = 3}
+\label{fig:spectren3}
+	\end{subfigure}
+\end{figure}
+
+
+\newpage
+\section{Construction d'un récepteur}%3
+L'opération de de-étalement effectuée au niveau du récepteur permet de retrouver notre signal
+d'origine
 \begin{figure}[h]
 	\centering
-	\captionsetup{justification=centering}
-	\includegraphics[width=0.5\linewidth]{../canal2}
-	%todo caption
-	\caption{}
-	\label{fig:errorsuposition}
+	\includegraphics[width=0.7\linewidth]{schema_q1}
+	\caption{shema q1}
+	\label{fig:schemaq1}
 \end{figure}
-L'effet de que les courbes sont presque identiques est que on a une séquence X d'entrée très longue ($N=10e6$) et cela fait que la estimation soit très précise
+
 \begin{figure}[h]
 	\centering
-	\captionsetup{justification=centering}
-	\includegraphics[width=0.6\linewidth]{../canal3}
-	%todo caption
-	\caption{}
-	\label{fig:}
+	\includegraphics[width=0.7\linewidth]{error_q1}
+	\caption{errror}
+	\label{fig:errorq1}
 \end{figure}
 
 
-\begin{lstlisting}[caption={Code calcul de capacite du canal },label=code_]
-Capacite_experimental = max(IXY)
-
-A1 = -p1*log2(p1) - (1-p1)*log2(1-p1)
-A2 = -p2*log2(p2) - (1-p2)*log2(1-p2)
-
-%%Calcul de alpha optimale theorique
-L = 2^((A1-A2)/(1-p1-p2))
-alphaopt = (1-p2*(1+L))/((1-p1-p2)*(1+L))
-
-%%calcul de la capacite
-K = alphaopt*(1-p1)+(1-alphaopt)*p2
-HBm = -K*log2(K)-(1-K)*log2(1-K)
-HABm = A1*alphaopt+A2*(1-alphaopt)
-Capacite_theorique = HBm - HABm
-\end{lstlisting}
 
 
+\newpage
+\section{Analyse des codes}%4
+%ESTO ESTA SUPER COPIADO CAMBIAR URGENTE
+L'objectif de cette partie va être d'observer les fonctions d'inter et d'auto-correlation pour
+différents codes utilisés dans les systèmes de communications numériques.
+Dans cette section on a va démontrer l'orthogonalité des différentes codes. Cette propriété peût être vérifie par
+le bias de la fonction d'intercorrelation qui vaut zero au proche à cette valeur quand les codes sont orthogonaux.\\
+La fonction d'autocorrelation par contre caracterisera la capacité d'étalment du code.
+%REESCRIBIR ESTO QUE ESTA COPIADO Y ADEMAS INVESTIGAR UN POCO
+La fonction d'autocorrelation, caractérisera la capacité d'étalement du code, plus elle
+sera proche de la réponse d'un bruit blanc (TF inverse d'une dsp constante sur toute la
+bande : constante partout sauf dirac en zéro) meilleures seront ses performances en
+terme d'étalement.
 
 
-\section{Conclusion}
-
-Les résultats trouvés sont très satisfaisant les valeur sont identiques pour la dernière simulation.
-L'equation utilisé pour le calcul de $\alpha_opt$ est la suivante
-\begin{equation}\label{key}
-\alpha_opt = \frac{1-p2(1+L)}{(1-p1-p2)(1+L)}
-\end{equation}
-\begin{equation}\label{key}
-L = 2^{\frac{A1-A2}{1-p1-p2}}
-\end{equation}
-Le $\alpha_{exp} = 0.5176$ trouvé à l'indice 104 du vecteur de information mutuelle est 
-le $\alpha_{theorique} = 0.5176$ aussi.
-\begin{lstlisting}[caption={Resultats },label=code_resultqts]
-Capacite_experimental =
-0.3978
-
->> alpha(104) % trouve a l indice 104
-
-ans = 0.5176
-
-alphaopt = 0.5176
-
-Capacite_theorique = 0.3978
-\end{lstlisting}
-
-La capacité expérimental du canal calculé comme le maximum de la information mutuelle $C_exp=0.3978$ et $C_theorique=0.3978$\\
+\subsection{Code Pseudo Aléatoire}
 \begin{figure}[h]
 	\centering
-	\captionsetup{justification=centering}
-	\includegraphics[width=0.6\linewidth]{../canal3}
-	%todo caption
-	\caption{}
-	\label{fig:}
+	\includegraphics[width=0.7\linewidth]{schema_q2}
+	\caption{schemq analysse code 1}
+	\label{fig:schemaq2}
 \end{figure}
-Dans la figure Fig\ref{fig:comparaison} comment les résultat de la simulation changent avec une longueur de séquence plus petit ($1e4$). Il y a plus d'erreur dans l'estimation.
+ 2 codes pseudo aléatoire "fils" de longueur 2 n -1 avec n = 7 ,
+de polynômes générateurs différents et d'états initiaux différents.
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.7\linewidth]{codean1_altacorr}
+\caption{altq correlqtion}
+\label{fig:codean1altacorr}
+	\end{subfigure}
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.7\linewidth]{codean1_bajacorr}
+\caption{altq correlqtion}
+\label{fig:codean1altacorr}
+	\end{subfigure}
+\end{figure}
+
+
+
+
+
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{codean1_altacorr}
+%	\caption{altq correlqtion}
+%	\label{fig:codean1altacorr}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{codean1_bajacorr}
+%	\caption{altq correlqtion}
+%	\label{fig:codean1altacorr}
+%\end{figure}
+
+\newpage
+\subsection{Hamard code}
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=0.7\linewidth]{schema_q2_analise_code_hamard}
+	\caption{analise coce hamard schema}
+	\label{fig:schemaq2analisecodehamard}
+\end{figure}
+Prendre un générateur de Hadamard " Hadamard Code Generator" [ code length : 128 ;
+code index :% ∀; Tech=10 -6 /128 ; frame based output ; éch par trame = 128 ].
+\begin{figure}[b]
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.7\linewidth]{hamard_altacorr}
+\caption{}
+\label{fig:hamardaltacorr}
+	\end{subfigure}
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.7\linewidth]{hamard_bajacorr}
+\caption{}
+\label{fig:hamardbajacorr}
+	\end{subfigure}
+\end{figure}
+
+
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{hamard_altacorr}
+%	\caption{}
+%	\label{fig:hamardaltacorr}
+%\end{figure}
+%
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{hamard_bajacorr}
+%	\caption{}
+%	\label{fig:hamardbajacorr}
+%\end{figure}
+
+\newpage
+\subsection{kasami code}
 \begin{figure}[h]
 	\centering
-	\captionsetup{justification=centering}
-	\includegraphics[width=0.7\linewidth]{../canal23}
-	%todo caption
+	\includegraphics[width=0.7\linewidth]{schema_q2_analise_code_kasami}
 	\caption{}
-	\label{fig:comparaison}
+	\label{fig:schemaq2analisecodekasami}
 \end{figure}
-%Une autre méthode de simulation en utilisant des masques binaire a été implémente qui améliore beaucoup
-%la vitesse de la simulation, mais malheureusement ne donne pas de bonnes valeur parce que elle est mal conçu. Un tâche pour améliorer le code pourra être bien implémenter cette solution.
 
-%----------------------------------------------------------------------------------------
-%	FIN
-%----------------------------------------------------------------------------------------
+Faire l'auto et l'intercorrelation de 2 codes de Kasami "fils" de longueur 2 n -1 avec n = 6, de
+polynômes générateurs identiques, d'états initiaux identiques mais d'indices différents.
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.7\linewidth]{kasami_bajacorr}
+\caption{baja corr}
+\label{fig:kasamibajacorr}
+	\end{subfigure}
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.4\textwidth}
+	\includegraphics[width=0.7\linewidth]{kasami_altacorr}
+\caption{alta corr}
+\label{fig:kasamibajacorr}
+	\end{subfigure}
+\end{figure}
+
+
+
+
+%
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{kasami_bajacorr}
+%	\caption{baja corr}
+%	\label{fig:kasamibajacorr}
+%\end{figure}
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.7\linewidth]{kasami_altacorr}
+%	\caption{alta corr}
+%	\label{fig:kasamibajacorr}
+%\end{figure}
+%
+\subsection{ lequel semble le plus adapté aux techniques d'accès CDMA ?}
+
+La que tenga menos correlation
+\chapter{Liaison CDMA}%5
+
+Vous avez maintenant tous les éléments pour construire une liaison CDMA à 3 utilisateurs qui
+utiliseront le même canal de transmission. Le canal de propagation sera simulé en mettant en
+série
+• un sommateur 3 voies
+• un bruit blanc additif gaussien de puissance contrôlée.
+
+
+%\section{Liaison montante : norme UMTS}%6
+
+
+
+
+
+\section{Conclusions}
+
+
+
+
+
+
+
+
+
+
+%------------------------------------------------------------------
+% 	FIN
+%-----------------------------------------------------------------
 
 
 
